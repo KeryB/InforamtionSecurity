@@ -1,0 +1,4 @@
+.card {
+    -fx-border-radius: 2px;
+    -fx-box-shadow: rgba(0, 0, 0, 0.21961) 0px 16px 28px 0px, rgba(0, 0, 0, 0.20784) 0px 25px 55px 0px;
+}

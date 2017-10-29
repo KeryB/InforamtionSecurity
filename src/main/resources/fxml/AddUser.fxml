@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="240.0" prefWidth="407.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.information.security.controller.AddUser">
+   <children>
+      <Label layoutX="61.0" layoutY="67.0" prefHeight="35.0" prefWidth="79.0" text="Логин :">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="80.0" layoutY="14.0" prefHeight="35.0" prefWidth="247.0" text="Добавление пользователя">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <JFXTextField fx:id="login" focusColor="#80cbc4" labelFloat="true" layoutX="121.0" layoutY="69.0" maxWidth="211.0" minWidth="211.0" prefHeight="31.0" prefWidth="211.0" />
+      <JFXButton layoutX="39.0" layoutY="171.0" onAction="#actionSave" prefHeight="35.0" prefWidth="124.0" text="Сохранить" />
+      <JFXButton layoutX="250.0" layoutY="171.0" onAction="#actionCancel" prefHeight="35.0" prefWidth="124.0" text="Отмена" />
+      <Label fx:id="error" layoutX="72.0" layoutY="102.0" prefHeight="17.0" prefWidth="247.0" textFill="#f50057" />
+   </children>
+</AnchorPane>
