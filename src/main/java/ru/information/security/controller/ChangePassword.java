@@ -1,5 +1,6 @@
 package ru.information.security.controller;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,6 +28,9 @@ public class ChangePassword extends CommonsFunction implements Initializable {
     private JFXPasswordField password;
 
     @FXML
+    private JFXButton save;
+
+    @FXML
     private Label passwordNotMatch;
 
     @FXML
@@ -41,7 +45,7 @@ public class ChangePassword extends CommonsFunction implements Initializable {
     @FXML
     private AnchorPane anchorPane;
 
-    private Label label = new Label("Введите пароль");
+    private Label label = new Label("Введите текущий пароль");
 
     private User currentUser;
 
@@ -50,6 +54,10 @@ public class ChangePassword extends CommonsFunction implements Initializable {
     private boolean isCurrentPassword = false;
 
     private static UserForm userForm;
+
+    private static boolean isSaveClicked = false;
+
+    private static ActionEvent event;
 
     public static void setUserForm(UserForm userForm){
         ChangePassword.userForm = userForm;
@@ -70,13 +78,13 @@ public class ChangePassword extends CommonsFunction implements Initializable {
             label.setFont(new Font(13));
             label.setLayoutX(10);
             label.setLayoutY(80);
+            save.setText("Далее");
             anchorPane.getChildren().add(label);
             isCurrentPassword = true;
         }
         if(currentUser.getPasswordConstraint()){
             showJfoenixDialog("У вас обнаружено парольное ограничение. Пароль может состоять только из букв и цифр", "Внимание",
                     anchorPane, 50,40,null);
-
         }
 
         anchorPane.setOnMouseClicked(e->{
@@ -99,6 +107,8 @@ public class ChangePassword extends CommonsFunction implements Initializable {
                 Stream.of(confirm, newPasswordLabel, confirmLabel, passwordNotMatch, samePassword).forEach(e -> {
                     e.setVisible(true);
                 });
+
+                save.setText("Сохранить");
                 label.setVisible(false);
                 samePassword.setVisible(false);
                 password.setText("");
@@ -128,6 +138,7 @@ public class ChangePassword extends CommonsFunction implements Initializable {
                 }
             } else {
                 userService.changePassword(currentUser, password.getText());
+                isSaveClicked = true;
                 actionCancel(event);
             }
         }
@@ -135,6 +146,21 @@ public class ChangePassword extends CommonsFunction implements Initializable {
 
     @FXML
     void cancel(ActionEvent event) {
+        setEvent(event);
+        isSaveClicked = false;
         actionCancel(event);
     }
+
+    public static boolean isIsSaveClicked() {
+        return isSaveClicked;
+    }
+
+    public static ActionEvent getEvent() {
+        return event;
+    }
+
+    public static void setEvent(ActionEvent event) {
+        ChangePassword.event = event;
+    }
+
 }

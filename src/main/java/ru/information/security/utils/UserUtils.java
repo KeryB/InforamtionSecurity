@@ -8,6 +8,8 @@ public class UserUtils {
 
     public static final String ADMIN_ICON_PATH = "src/main/resources/icons/admin.png";
 
+    public static final String USER_ICON_PATH = "src/main/resources/icons/user.png";
+
     public static final String ROLE = "Роль";
 
     public static final String LOGIN = "Логин";
@@ -23,4 +25,6 @@ public class UserUtils {
     public static final String EMPTY_PASSWORD_BODY = "У вас обнаружен пустой пароль, поменяйте пароль для дальнейшей работы в системе";
 
     public static final String EMPTY_PASSWORD_HEADING = "Внимание!";
+
+    public static final String PASSWORD_CONSTRAINT = "У вас обнаружено парольное ограничение, данное ограничение не совпадает с вышим паролем";
 }

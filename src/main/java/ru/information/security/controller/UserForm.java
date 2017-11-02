@@ -3,23 +3,20 @@ package ru.information.security.controller;
 import com.jfoenix.controls.JFXButton;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import de.jensd.fx.glyphs.octicons.OctIcon;
-import de.jensd.fx.glyphs.octicons.OctIconView;
 import javafx.event.ActionEvent;
-import javafx.event.EventType;
+import javafx.event.EventTarget;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import ru.information.security.commons.CommonsFunction;
 import ru.information.security.commons.UserPayload;
 import ru.information.security.entity.Role;
@@ -73,10 +70,14 @@ public class UserForm extends CommonsFunction implements Initializable {
     @FXML
     private JFXButton signOut;
 
+    @FXML
+    private Label header;
+
     private UserService userService;
 
     private TableViewBuilder tableViewBuilder;
 
+    private static boolean wasEmptyOrConstraint = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -99,20 +100,26 @@ public class UserForm extends CommonsFunction implements Initializable {
             }
             setAdminStaff();
         } else {
+            typeUser.setText(UserUtils.USER);
+            File file = new File(UserUtils.USER_ICON_PATH);
+            String img = null;
+            try {
+                img = file.toURI().toURL().toString();
+                userIcon.setImage(new Image(img));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
             setAdminStaff();
             if (!checkOnBlocked()) {
                 setUserStaff();
-                if (checkOnEmptyPassword()) {
+            } else if (UserPayload.getUser() != null) {
+                if (UserPayload.getUser().getPasswordConstraint() && checkOnPasswordConstraint()) {
                     Stream.of(info, signOut).forEach(e -> {
                         e.setDisable(true);
                     });
-                } else {
-                    Stream.of(info, signOut).forEach(e -> {
-                        e.setDisable(false);
-                    });
+                    showPasswordConstraint();
                 }
             }
-            typeUser.setText(UserUtils.USER);
         }
     }
 
@@ -125,12 +132,19 @@ public class UserForm extends CommonsFunction implements Initializable {
         });
     }
 
-    private boolean checkOnEmptyPassword() {
-        if (UserPayload.getUser().getPassword().isEmpty()) {
-            showJfoenixDialog(UserUtils.EMPTY_PASSWORD_BODY, UserUtils.EMPTY_PASSWORD_HEADING, anchorPane, 146, 150, null);
-            return true;
+    private boolean checkOnPasswordConstraint() {
+        return UserPayload.getUser().getPasswordConstraint() && !userService.checkOnPasswordConstraint(UserPayload.getPassword());
+    }
+
+    private void showPasswordConstraint() {
+        showJfoenixDialog(UserUtils.PASSWORD_CONSTRAINT, "Парольное ограничение", anchorPane, 60, 150, null);
+    }
+
+    public void checkOnEmptyPassword() {
+        if (UserPayload.getUser().getPassword().isEmpty() || UserPayload.getUser().getPasswordConstraint()) {
+            UserForm.wasEmptyOrConstraint = true;
+            changePasswordAction(null);
         }
-        return false;
     }
 
     private boolean checkOnBlocked() {
@@ -161,10 +175,14 @@ public class UserForm extends CommonsFunction implements Initializable {
     }
 
     private void signOutAction(ActionEvent actionEvent) {
-        actionCancel(actionEvent);
+        if (actionEvent != null) {
+            actionCancel(actionEvent);
+        } else {
+            Stage stage = (Stage) info.getScene().getWindow();
+            stage.close();
+        }
         FXMLLoader fxmlLoader = new FXMLLoader();
         Parent root = null;
-
         try {
             root = FXMLLoader.load(getClass().getResource("/fxml/LoginForm.fxml"));
             Stage stage = new Stage();
@@ -180,24 +198,61 @@ public class UserForm extends CommonsFunction implements Initializable {
 
 
     @FXML
-    void actionShowUsers(ActionEvent event) {
-        if (tableViewBuilder.getTableView() == null) {
-            tableViewBuilder.createTableView();
-            tableViewBuilder.createUserTable(anchorPane);
-        }
+    private void actionShowUsers(ActionEvent event) {
+        header.setVisible(true);
+        header.setText("Все пользователи:");
+        tableViewBuilder.createTableView();
+        tableViewBuilder.createUserTable(anchorPane);
         TableViewBuilder.addTableItems();
     }
 
-
     @FXML
-    void changePasswordAction(ActionEvent event) {
+    private void changePasswordAction(ActionEvent event) {
         showModal("/fxml/ChangePassword.fxml", CHANGE_PASSWORD, 103, 31, false);
+
+        User user = UserPayload.getUser();
+        if (!ChangePassword.isIsSaveClicked() && (user.getPassword().isEmpty() || user.getPasswordConstraint())) {
+            signOutAction(event);
+        }
+        if (ChangePassword.isIsSaveClicked()) {
+            if (!UserForm.wasEmptyOrConstraint) {
+                UserForm.wasEmptyOrConstraint = false;
+                signOutAction(event);
+            } else {
+                UserForm.wasEmptyOrConstraint = false;
+            }
+        }
     }
 
     @FXML
-    void addUsersAction(ActionEvent event) {
+    private void addUsersAction(ActionEvent event) {
         showModal("/fxml/AddUser.fxml", ADD_USER, 407, 240, false);
+        if (TableViewBuilder.isIsEditAllUsers()) {
+            header.setText("Все пользователи:");
+        } else {
+            TableViewBuilder.setEditAllUsers(false);
+        }
     }
 
+    @FXML
+    private void infoAction(ActionEvent event) {
+        showModal("/fxml/Info.fxml", "Инфо", 468, 231, false);
+    }
 
+    @FXML
+    private void constraintsActions(ActionEvent event) {
+        header.setVisible(true);
+        header.setText("Пользователи с парольным ограничением");
+        tableViewBuilder.createTableView();
+        tableViewBuilder.createUserTable(anchorPane);
+        TableViewBuilder.addTableConstraintTable();
+    }
+
+    public static boolean getWasEmptyOrConstraint() {
+        return wasEmptyOrConstraint;
+    }
+
+    public static void setWasEmptyOrConstraint(boolean wasEmptyOrConstraint) {
+        wasEmptyOrConstraint = wasEmptyOrConstraint;
+    }
 }

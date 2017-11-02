@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="231.0" prefWidth="468.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label layoutX="123.0" layoutY="14.0" text="Информация о программе">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="31.0" layoutY="50.0" text="Дата создания" />
+      <Label layoutX="155.0" layoutY="50.0" text="30.10.2017" />
+      <Label layoutX="31.0" layoutY="80.0" text="Программу создал" />
+      <Label layoutX="155.0" layoutY="80.0" text="Булычев Кирилл Валерьевич" />
+      <Label layoutX="31.0" layoutY="116.0" text="Вариант" />
+      <Label layoutX="155.0" layoutY="116.0" text="3" />
+   </children>
+</AnchorPane>

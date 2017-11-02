@@ -14,6 +14,8 @@ public class UserPayload {
 
     private static User selectedUser;
 
+    private static String password;
+
     public static User getUser() {
         return currentUser;
     }
@@ -36,5 +38,13 @@ public class UserPayload {
 
     public static void setSelectedUser(User selectedUser) {
         UserPayload.selectedUser = selectedUser;
+    }
+
+    public static String getPassword() {
+        return password;
+    }
+
+    public static void setPassword(String password) {
+        UserPayload.password = password;
     }
 }

@@ -12,7 +12,7 @@ public class User {
         this.passwordConstraint = passwordConstraint;
     }
 
-    public enum Key{
+    public enum Key {
         login,
         password,
         role
@@ -20,6 +20,8 @@ public class User {
 
     public User() {
     }
+
+    private boolean isShowModal;
 
     private int role;
 

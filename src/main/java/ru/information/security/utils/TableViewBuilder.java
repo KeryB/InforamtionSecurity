@@ -2,6 +2,7 @@ package ru.information.security.utils;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -17,7 +18,9 @@ public class TableViewBuilder extends CommonsFunction {
 
     private static TableView<User> tableView;
 
-    public void createUserTable(AnchorPane anchorPane){
+    private static boolean isEditAllUsers = false;
+
+    public void createUserTable(AnchorPane anchorPane) {
         tableView.setPrefHeight(434);
         tableView.setPrefWidth(503);
         tableView.setLayoutX(188);
@@ -26,7 +29,7 @@ public class TableViewBuilder extends CommonsFunction {
         tableView.setEditable(true);
         createTableColumns();
 
-        tableView.setOnMouseClicked(event->{
+        tableView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 UserPayload.setSelectedUser(tableView.getSelectionModel().getSelectedItem());
                 showEditPanel(tableView);
@@ -37,36 +40,47 @@ public class TableViewBuilder extends CommonsFunction {
     }
 
     private void showEditPanel(TableView<User> tableView) {
-        showModal("/fxml/EditPanel.fxml", "Редактирование пользователя",500,300, false);
+        showModal("/fxml/EditPanel.fxml", "Редактирование пользователя", 500, 300, false);
     }
 
-    private void createTableColumns(){
+    private void createTableColumns() {
 
         TableColumn<User, String> login = new TableColumn<>(UserUtils.LOGIN);
-        login.setCellValueFactory(new PropertyValueFactory<User,String>("login"));
+        login.setCellValueFactory(new PropertyValueFactory<User, String>("login"));
 
         TableColumn<User, String> isBlocked = new TableColumn<>(UserUtils.IS_BLOCKED);
-        isBlocked.setCellValueFactory(new PropertyValueFactory<User,String>("isBLockedTable"));
+        isBlocked.setCellValueFactory(new PropertyValueFactory<User, String>("isBLockedTable"));
 
         TableColumn<User, String> constrains = new TableColumn<>(UserUtils.CONSTRAINS);
-        constrains.setCellValueFactory(new PropertyValueFactory<User,String>("passwordConstraintTable"));
+        constrains.setCellValueFactory(new PropertyValueFactory<User, String>("passwordConstraintTable"));
 
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tableView.getColumns().addAll(login,isBlocked,constrains);
+        tableView.getColumns().addAll(login, isBlocked, constrains);
     }
 
-    public static void addTableItems(){
+    public static void addTableItems() {
         ObservableList<User> tableList = FXCollections.observableArrayList();
 
-        UserPayload.getUserList().forEach(e->{
-            if(e.getRole() != Role.admin.ordinal()){
+        UserPayload.getUserList().forEach(e -> {
+            if (e.getRole() != Role.admin.ordinal()) {
+                tableList.add(e);
+            }
+        });
+        isEditAllUsers = true;
+        tableView.setItems(tableList);
+    }
+
+    public static void addTableConstraintTable() {
+        ObservableList<User> tableList = FXCollections.observableArrayList();
+        UserPayload.getUserList().forEach(e -> {
+            if (e.getRole() != Role.admin.ordinal() && e.getPasswordConstraint()) {
                 tableList.add(e);
             }
         });
         tableView.setItems(tableList);
     }
 
-    public void createTableView(){
+    public static void createTableView() {
         tableView = new TableView<>();
     }
 
@@ -76,5 +90,13 @@ public class TableViewBuilder extends CommonsFunction {
 
     public void setTableView(TableView<User> tableView) {
         this.tableView = tableView;
+    }
+
+    public static boolean isIsEditAllUsers() {
+        return isEditAllUsers;
+    }
+
+    public static void setEditAllUsers(boolean isEditAllUsers) {
+        TableViewBuilder.isEditAllUsers = isEditAllUsers;
     }
 }

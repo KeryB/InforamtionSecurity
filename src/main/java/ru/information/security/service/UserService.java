@@ -43,6 +43,7 @@ public class UserService {
             if (user.getLogin().equals(login) && PasswordDecoder.checkPassword(password, user.getPassword())) {
                 accessUser.setUser(user);
                 UserPayload.setUser(user);
+                UserPayload.setPassword(password);
                 return accessUser;
             }
         }
@@ -82,12 +83,15 @@ public class UserService {
 
     public void changePassword(User curUser, String password) {
 
+        User changedUser = null;
         for (User user : userList) {
             if (user.getLogin().equals(curUser.getLogin())) {
                 user.setPassword(PasswordDecoder.hashPassword(password));
+//                changedUser = user;
                 break;
             }
         }
+//        UserPayload.setUser(changedUser);
         FileWorker.writeToFile(userList);
     }
 
@@ -109,12 +113,8 @@ public class UserService {
     public Pair<Errors.Type, String> validateChangePassword(String text, String passwordText, User currentUser) {
 
 
-        if(currentUser.getPasswordConstraint()){
-            Pattern pattern = Pattern.compile("(\\w)*");
-            Matcher matcher = pattern.matcher(passwordText);
-            if(!matcher.matches()){
-                return new Pair<>(Errors.Type.passwordConstraint, Errors.PASSWORD_CONSTRAINT);
-            }
+        if (currentUser.getPasswordConstraint() && !checkOnPasswordConstraint(passwordText)) {
+            return new Pair<>(Errors.Type.passwordConstraint, Errors.PASSWORD_CONSTRAINT);
         }
 
         if (text.isEmpty()) {
@@ -169,6 +169,22 @@ public class UserService {
         }
         return null;
     }
+
+    public boolean checkOnPasswordConstraint(String password) {
+        Pattern pattern = Pattern.compile("([a-zA-Zа-яА-Я0-9])*");
+        Matcher matcher = pattern.matcher(password);
+        System.out.println(matcher.matches());
+        return matcher.matches();
+    }
+
+//    public User findChangedUser(User user){
+//        userList = FileWorker.readFromFile();
+//        userList.forEach(e->{
+//            if(e.getLogin().equals(user.getLogin()) && e.getPassword().equals(user.getPassword())){
+//
+//            }
+//        });
+//    }
 
 
 //    private  getPayloadClaims(){

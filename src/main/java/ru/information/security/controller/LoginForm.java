@@ -99,7 +99,7 @@ public class LoginForm extends CommonsFunction implements Initializable {
                                 requiredLogin.setVisible(true);
                             } else {
                                 error.setVisible(true);
-                                if(count == 0){
+                                if (count == 0) {
                                     actionCancel(event);
                                 }
                                 showJfoenixDialog("У вас осталось " + count-- + " попытки", "Ошибка", anchorPane, 146, 150, null);
@@ -107,7 +107,7 @@ public class LoginForm extends CommonsFunction implements Initializable {
                         });
                         spinner.setVisible(false);
                     }
-                    if(accessUser.getUser() != null){
+                    if (accessUser.getUser() != null) {
                         cancelPanel(event);
                         showController();
                     }
@@ -115,23 +115,26 @@ public class LoginForm extends CommonsFunction implements Initializable {
 
     }
 
-    private void cancelPanel(ActionEvent actionEvent){
+    private void cancelPanel(ActionEvent actionEvent) {
         actionCancel(actionEvent);
     }
 
     private void showController() {
-        showModal("/fxml/UserForm.fxml", USER_FORM, 694, 496, true);
-//        FXMLLoader fxmlLoader = new FXMLLoader();
-//        Parent root = null;
-//        try {
-//            root = FXMLLoader.load(getClass().getResource("/fxml/UserForm.fxml"));
-//            Stage stage = new Stage();
-//            stage.setScene(new Scene(root));
-//            stage.setMinWidth(694);
-//            stage.setMinHeight(496);
-//            stage.show();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/UserForm.fxml"));
+        Parent root = null;
+        try {
+            root = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setMinWidth(694);
+            stage.setMinHeight(496);
+            stage.show();
+
+            UserForm userForm = fxmlLoader.getController();
+            userForm.checkOnEmptyPassword();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
